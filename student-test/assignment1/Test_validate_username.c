@@ -26,5 +26,5 @@ void test_validate_my_username()
     const char* confFileUsername = malloc_username_from_conf_file();
 
     // Step 3: Use Unity assertion to verify equality
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(hardcodedUsername, confFileUsername, "Usernames are not equal");;
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(hardcodedUsername, confFileUsername, "AESD students, please fix me!");
 }
