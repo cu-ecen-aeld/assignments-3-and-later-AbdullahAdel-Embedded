@@ -19,5 +19,12 @@ void test_validate_my_username()
      * config file and my_username() functions are setup properly
      */
     //TEST_ASSERT_TRUE_MESSAGE(false,"AESD students, please fix me!");
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(my_username(), malloc_username_from_conf_file());
+        // Step 1: Call my_username() in autotest-validate.c
+    const char* hardcodedUsername = my_username();
+
+    // Step 2: Obtain the value from malloc_username_from_conf_file()
+    const char* confFileUsername = malloc_username_from_conf_file();
+
+    // Step 3: Use Unity assertion to verify equality
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(hardcodedUsername, confFileUsername, "Usernames are not equal");;
 }
