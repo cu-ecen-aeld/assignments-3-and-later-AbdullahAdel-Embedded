@@ -27,6 +27,6 @@ bool this_function_returns_false()
  */
 const char *my_username()
 {
-    const char name[] = "AbdullahAdel-Embedded";
-    return name;
+     
+    return "AbdullahAdel-Embedded";
 }
