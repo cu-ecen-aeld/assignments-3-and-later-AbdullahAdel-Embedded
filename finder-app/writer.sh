@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Check if the number of arguments is correct
+# Check if the number of arguments  is correct
 if [ "$#" -ne 2 ]; then
     echo "Error: Please provide both writefile and writestr as arguments."
     exit 1
