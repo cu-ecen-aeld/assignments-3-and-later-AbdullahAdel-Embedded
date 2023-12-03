@@ -13,7 +13,7 @@ jobs:
       - name: Run unit test
         run: ./unit-test.sh
 
-  full test:
+  full-test:
     container: cuaesd/aesd-autotest:unit-test
     runs-on: ubuntu-latest
     steps:
