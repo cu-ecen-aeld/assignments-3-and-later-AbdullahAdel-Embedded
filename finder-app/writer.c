@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    // Write the string to the file
+    // Write the string to the fileee
     fprintf(file, "%s\n", writestr);
 
     // Log the write operation using syslog
