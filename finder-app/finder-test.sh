@@ -39,7 +39,7 @@ if [ ! -f writer ]; then
 fi
 
 # create WRITEDIR if not assignment1
-assignment=$(cat ../conf/assignment.txt)
+assignment=$(cat conf/assignment.txt)
 
 if [ "$assignment" != "assignment1" ]; then
     mkdir -p "$WRITEDIR"
@@ -55,7 +55,7 @@ for i in $(seq 1 $NUMFILES); do
     ./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
 
-OUTPUTSTRING=$(./finder "$WRITEDIR" "$WRITESTR")
+OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
 
 # remove temporary directories
 rm -rf /tmp/aeld-data
