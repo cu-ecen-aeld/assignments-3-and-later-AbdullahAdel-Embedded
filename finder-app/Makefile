@@ -15,7 +15,7 @@ writer: writer.c
 clean:
 	rm -f writer
 
-# Cross-compilation support
+# Cross-compilation support 
 ifdef CROSS_COMPILE
 	CC := $(CROSS_COMPILE)gcc
 endif
