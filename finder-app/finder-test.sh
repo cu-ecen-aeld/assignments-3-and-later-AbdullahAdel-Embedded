@@ -26,37 +26,6 @@ MATCHSTR="The number of files are ${NUMFILES} and the number of matching lines a
 
 echo "Writing ${NUMFILES} files containing string '${WRITESTR}' to ${WRITEDIR}"
 
-# Clean previous build artifacts
-make clean
-
-# Compile writer application using native compilation
-make
-
-# Check if the writer application was compiled successfully
-if [ ! -f writer ]; then
-    echo "Error: Compilation failed. Exiting."
-    exit 1
-fi
-
-# create WRITEDIR if not assignment1
-assignment=$(cat conf/assignment.txt)
-
-if [ "$assignment" != "assignment1" ]; then
-    mkdir -p "$WRITEDIR"
-
-    if [ -d "$WRITEDIR" ]; then
-        echo "$WRITEDIR created"
-    else
-        exit 1
-    fi
-fi
-
-for i in $(seq 1 $NUMFILES); do
-    ./writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
-done
-
-OUTPUTSTRING=$(./finder.sh "$WRITEDIR" "$WRITESTR")
-
 # remove temporary directories
 rm -rf /tmp/aeld-data
 
