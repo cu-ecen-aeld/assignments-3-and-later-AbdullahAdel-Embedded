@@ -13,21 +13,20 @@ FINDER_APP_DIR=$(realpath $(dirname $0))
 ARCH=arm64
 CROSS_COMPILE=aarch64-none-linux-gnu-
 
-if [ $# -lt 1 ]
-then
-	echo "Using default directory ${OUTDIR} for output"
+if [ $# -lt 1 ]; then
+    echo "Using default directory ${OUTDIR} for output"
 else
-	OUTDIR=$1
-	echo "Using passed directory ${OUTDIR} for output"
+    OUTDIR=$1
+    echo "Using passed directory ${OUTDIR} for output"
 fi
 
 mkdir -p ${OUTDIR}
 
 cd "$OUTDIR"
 if [ ! -d "${OUTDIR}/linux-stable" ]; then
-    #Clone only if the repository does not exist.
-	echo "CLONING GIT LINUX STABLE VERSION ${KERNEL_VERSION} IN ${OUTDIR}"
-	git clone ${KERNEL_REPO} --depth 1 --single-branch --branch ${KERNEL_VERSION}
+    # Clone only if the repository does not exist.
+    echo "CLONING GIT LINUX STABLE VERSION ${KERNEL_VERSION} IN ${OUTDIR}"
+    git clone ${KERNEL_REPO} --depth 1 --single-branch --branch ${KERNEL_VERSION}
 fi
 if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
     cd linux-stable
@@ -35,14 +34,13 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
     git checkout ${KERNEL_VERSION}
 
     # Add your kernel build steps here
-    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} mrproper
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} distclean
     make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} defconfig
-    make -j24 ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} all
-    # skip modules
-    #make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
-    #make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} dtbs
-  
-   
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} -j$(nproc)
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} modules
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} dtbs
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} INSTALL_MOD_PATH=output modules_install
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} INSTALL_PATH=output install
 fi
 
 echo "Adding the Image in outdir"
@@ -50,67 +48,62 @@ cp ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ${OUTDIR}
 
 echo "Creating the staging directory for the root filesystem"
 cd "$OUTDIR"
-if [ -d "${OUTDIR}/rootfs" ]
-then
-	echo "Deleting rootfs directory at ${OUTDIR}/rootfs and starting over"
-    sudo rm  -rf ${OUTDIR}/rootfs
+if [ -d "${OUTDIR}/rootfs" ]; then
+    echo "Deleting rootfs directory at ${OUTDIR}/rootfs and starting over"
+    sudo rm -rf ${OUTDIR}/rootfs
 fi
 
 # Create necessary base directories
+echo "Creating necessary base directories in ${OUTDIR}/rootfs"
+mkdir -p ${OUTDIR}/rootfs
+cd ${OUTDIR}/rootfs
 
-mkdir -p ${OUTDIR}/rootfs/{bin,dev,etc,home,lib,lib64,proc,sbin,sys,tmp,usr,var}
-mkdir -p ${OUTDIR}/rootfs/{usr/bin,usr/lib,usr/sbin}
-mkdir -p ${OUTDIR}/rootfs/var/log
+mkdir -p bin dev etc home lib lib64 proc sbin sys tmp usr var
+mkdir -p usr/bin usr/lib usr/sbin
+mkdir -p var/log
 
 cd "$OUTDIR"
-if [ ! -d "${OUTDIR}/busybox" ]
-then
-git clone git://busybox.net/busybox.git
+if [ ! -d "${OUTDIR}/busybox" ]; then
+    git clone git://busybox.net/busybox.git
     cd busybox
     git checkout ${BUSYBOX_VERSION}
-    #  Configure busybox
-    make distclean
-    make defconfig
+    
+    # TODO: Configure busybox (you can add 'make menuconfig' here if needed)
+    
+    # Clean build artifacts for busybox
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} distclean
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} defconfig
+    
+    # Build and install busybox
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
+    make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} CONFIG_PREFIX=${OUTDIR}/rootfs install
 else
     cd busybox
 fi
 
-# Make and install busybox
-make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE}
-make CONFIG_PREFIX=${OUTDIR}/rootfs ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} install
-
-# Add library dependencies to rootfs
-CROSS_LIB_PATH=$(${CROSS_COMPILE}gcc -print-sysroot)
-
+# TODO: Add library dependencies to rootfs
 echo "Library dependencies"
-for file in $(${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter" | grep -Po "\/lib\/[a-z].*.[0-9]"); do
-    libFile=${CROSS_LIB_PATH}/${file}
-    cp ${libFile} ${OUTDIR}/rootfs/lib
-done
+${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter"
+${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 
-for file in $(${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library" | grep -Po "lib[a-z.]*.so.[0-9]"); do
-    libFile=${CROSS_LIB_PATH}/lib64/${file}
-    cp ${libFile} ${OUTDIR}/rootfs/lib64
-done
-
-
-# Make device nodes
+# TODO: Make device nodes
 sudo mknod -m 666 ${OUTDIR}/rootfs/dev/null c 1 3
-sudo mknod -m 666 ${OUTDIR}/rootfs/dev/console c 5 1
+sudo mknod -m 600 ${OUTDIR}/rootfs/dev/console c 5 1
 
-# Clean and build the writer utility
-cd ${FINDER_APP_DIR}
+# TODO: Clean and build the writer utility
+cd /home/abdullah/Desktop/assignment-3/finder-app
 make clean
-make CROSS_COMPILE=${CROSS_COMPILE}
+make
 
-# Copy the finder related scripts and executables to the /home directory
+# TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
-cp -LR ${FINDER_APP_DIR}/{autorun-qemu.sh,finder-test.sh,writer,conf,conf,finder.sh} ${OUTDIR}/rootfs/home
+cp /home/abdullah/Desktop/assignment-3/finder-app/* ${OUTDIR}/rootfs/home/
 
-# TODO: Chown the root directory -- is this needed?
+# TODO: Chown the root directory
+cd ${OUTDIR}/rootfs
+sudo chown -R root:root *
 
-# Create initramfs.cpio.gz
-cd "${OUTDIR}/rootfs"
+# TODO: Create initramfs.cpio.gz
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 gzip -f ${OUTDIR}/initramfs.cpio
 
