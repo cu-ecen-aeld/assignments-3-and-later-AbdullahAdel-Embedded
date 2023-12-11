@@ -82,24 +82,33 @@ else
 fi
 
 # TODO: Add library dependencies to rootfs
+# Done
+
 echo "Library dependencies"
 ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "program interpreter"
 ${CROSS_COMPILE}readelf -a ${OUTDIR}/rootfs/bin/busybox | grep "Shared library"
 
 # TODO: Make device nodes
+# Done
+
 sudo mknod -m 666 ${OUTDIR}/rootfs/dev/null c 1 3
 sudo mknod -m 600 ${OUTDIR}/rootfs/dev/console c 5 1
 
 # TODO: Clean and build the writer utility
+# Done
+
 cd /home/abdullah/Desktop/assignment-3/finder-app
 make clean
 make
 
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
+# Done
+
 cp /home/abdullah/Desktop/assignment-3/finder-app/* ${OUTDIR}/rootfs/home/
 
-# TODO: Chown the root directory
+# TODO: Chown      S the root directory
+# Done
 cd ${OUTDIR}/rootfs
 sudo chown -R root:root *
 
