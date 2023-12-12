@@ -52,7 +52,7 @@ bool start_thread_obtaining_mutex(pthread_t *thread, pthread_mutex_t *mutex,int 
      * See implementation details in threading.h file comment block
      */
     //return false;
-        struct thread_data* thread_args = malloc(sizeof(struct thread_data));
+    struct thread_data* thread_args = malloc(sizeof(struct thread_data));
 
     if (thread_args == NULL) {
         perror("Error allocating memory for thread arguments");
