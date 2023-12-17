@@ -1,14 +1,14 @@
 #!/bin/sh
 # Tester script for assignment 1 and assignment 2
-# Author: Siddhant Jajoo
+# Author: Abdullah Adel
 
 set -e
 set -u
 
 NUMFILES=10
-OUTDIR=/tmp/assignment-4-result.txt
 WRITESTR=AELD_IS_FUN
 WRITEDIR=/tmp/aeld-data
+#username=$(cat conf/username.txt)
 username=$(cat /etc/finder-app/conf/username.txt)
 
 if [ $# -lt 2 ]
@@ -46,14 +46,17 @@ fi
 #make clean
 #make
 
+#cd $(dirname $0)
+
 for i in $( seq 1 $NUMFILES)
 do
 	writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
 
+
 OUTPUTSTRING=$(finder.sh "$WRITEDIR" "$WRITESTR")
 
-echo ${OUTPUTSTRING} > ${OUTDIR}
+echo $OUTPUTSTRING > /tmp/assignment-4-result.txt
 
 set +e
 echo ${OUTPUTSTRING} | grep "${MATCHSTR}"
