@@ -59,7 +59,7 @@ do
 done
 
 
-OUTPUTSTRING=$(/user/bin/finder.sh "$WRITEDIR" "$WRITESTR")
+OUTPUTSTRING=$(/usr/bin/finder.sh "$WRITEDIR" "$WRITESTR")
 
 echo $OUTPUTSTRING > /tmp/assignment-4-result.txt
 
