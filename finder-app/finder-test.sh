@@ -58,10 +58,26 @@ do
 	writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
 
-chmod +x "${SCRIPT_DIR}/finder.sh"
+#hmod +x "${SCRIPT_DIR}/finder.sh"
 
 
-OUTPUTSTRING=$(/usr/bin/finder.sh "$WRITEDIR" "$WRITESTR")
+#OUTPUTSTRING=$(/usr/bin/finder.sh "$WRITEDIR" "$WRITESTR")
+
+filesdir="$WRITEDIR"
+searchstr="$WRITESTR"
+
+# Check if filesdir is a directory
+if [ ! -d "$filesdir" ]; then
+    echo "Error: '$filesdir' is not a directory."
+    exit 1
+fi
+
+# Count the number of files and matching lines
+file_count=$(find "$filesdir" -type f | wc -l)
+match_count=$(grep -r "$searchstr" "$filesdir" | wc -l)
+
+# Print the results
+OUTPUTSTRING = "The number of files are $file_count and the number of matching lines are $match_count" 
 
 echo $OUTPUTSTRING > /tmp/assignment-4-result.txt
 
