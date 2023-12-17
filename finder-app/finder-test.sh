@@ -77,7 +77,7 @@ file_count=$(find "$filesdir" -type f | wc -l)
 match_count=$(grep -r "$searchstr" "$filesdir" | wc -l)
 
 # Print the results
-OUTPUTSTRING = "The number of files are $file_count and the number of matching lines are $match_count" 
+OUTPUTSTRING="The number of files are $file_count and the number of matching lines are $match_count" 
 
 echo $OUTPUTSTRING > /tmp/assignment-4-result.txt
 
