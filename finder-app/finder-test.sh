@@ -10,6 +10,11 @@ WRITESTR=AELD_IS_FUN
 WRITEDIR=/tmp/aeld-data
 #username=$(cat conf/username.txt)
 username=$(cat /etc/finder-app/conf/username.txt)
+# Get the directory of the script
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
+# Add the script's directory to the PATH
+export PATH="$PATH:$SCRIPT_DIR"
 
 if [ $# -lt 2 ]
 then
