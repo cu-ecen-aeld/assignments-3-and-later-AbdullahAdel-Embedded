@@ -58,6 +58,8 @@ do
 	writer "$WRITEDIR/${username}$i.txt" "$WRITESTR"
 done
 
+chmod +x "${SCRIPT_DIR}/finder.sh"
+
 
 OUTPUTSTRING=$(/usr/bin/finder.sh "$WRITEDIR" "$WRITESTR")
 
